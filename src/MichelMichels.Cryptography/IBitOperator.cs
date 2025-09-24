@@ -12,4 +12,6 @@ public interface IBitOperator
 
     bool ShiftLeft(byte[] data);
     bool ShiftRight(byte[] data);
+
+
 }

@@ -42,7 +42,7 @@ public class BitOperatorTests
     [TestMethod()]
     [DataRow((byte)0b0000_0000, (byte)0b0000_0000, 7)]
     [DataRow((byte)0b0000_0001, (byte)0b0000_0010, 7)]
-    [DataRow((byte)0b0100_0001, (byte)0b0000_0011, 7)]
+    [DataRow((byte)0b0100_1001, (byte)0b0001_0011, 7)]
     [DataRow((byte)0b0010_0001, (byte)0b0000_0011, 6)]
     public void RotateLeft_Single_Length_Test(byte input, byte output, int length)
     {
@@ -143,6 +143,23 @@ public class BitOperatorTests
         // Act
         byte[] inputArray = [input];
         context.RotateRight(inputArray, 1);
+
+        // Assert
+        Assert.AreEqual(output, inputArray[0]);
+    }
+
+    [TestMethod()]
+    [DataRow((byte)0b0000_0000, (byte)0b0000_0000, 7)]
+    [DataRow((byte)0b0000_0001, (byte)0b0100_0000, 7)]
+    [DataRow((byte)0b0100_0001, (byte)0b0110_0000, 7)]
+    public void RotateRight_Single_BitLength_Test(byte input, byte output, int bitLength)
+    {
+        // Arrange
+        BitOperator context = new();
+
+        // Act
+        byte[] inputArray = [input];
+        context.RotateRight(inputArray, 1, bitLength);
 
         // Assert
         Assert.AreEqual(output, inputArray[0]);

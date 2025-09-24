@@ -61,15 +61,29 @@ public class BitOperator : IBitOperator
     {
         RotateLeft(bytes);
 
-        byte mod = (byte)(length % NumberOfBitsInByte);
-        if (mod == 0)
+        byte remainder = (byte)(length % NumberOfBitsInByte);
+        if (remainder == 0)
         {
             return;
         }
 
-        byte shifted = (byte)(bytes[0] >> mod);
-        bytes[0] = (byte)(bytes[0] & mod);
-        bytes[^1] = (byte)(bytes[^1] | shifted);
+        // We shift the first byte (most significant byte) 
+        // to the right by the remainder. This gives us the bits that 
+        // overflowed from the left side and need to be wrapped around to the right side.
+        // For example 0000_1011 with a remainder of 3 becomes 0000_0001.
+        byte overflow = (byte)(bytes[0] >> remainder);
+
+        // We create our mask by shifting the bits to the right so that the leftmost
+        // 'remainder' bits are 1 and the rest are 0.
+        // For example, for a remainder of 3, we want a mask of 0000_0111.
+        byte mask = (byte)(0b1111_1111 >> (NumberOfBitsInByte - remainder));
+
+        // We clear the other bits in the first byte by ANDing it with the mask.
+        bytes[0] = (byte)(bytes[0] & mask);
+
+        // Finally, we set the rightmost (least significant)
+        // overflow bits of the last byte we copied from the MSB.
+        bytes[^1] = (byte)(bytes[^1] | overflow);
     }
 
     public void RotateRight(byte[] bytes, int numberOfRotations)
@@ -107,15 +121,27 @@ public class BitOperator : IBitOperator
     public void RotateRightWithLength(byte[] bytes, int length)
     {
         RotateRight(bytes);
-        byte mod = (byte)(length % NumberOfBitsInByte);
-        if (mod == 0)
+        byte remainder = (byte)(length % NumberOfBitsInByte);
+        if (remainder == 0)
         {
             return;
         }
 
-        byte shifted = (byte)(bytes[^1] << mod);
-        bytes[^1] = (byte)(bytes[^1] & (0xFF << mod));
-        bytes[0] = (byte)(bytes[0] | shifted);
+        // We create our mask by shifting the bits to the left so that the leftmost
+        // 'remainder' bits are 1 and the rest are 0.
+        // For example, for a remainder of 3, we want a mask of 0000_0111.
+        byte mask = (byte)(0b1111_1111 >> (NumberOfBitsInByte - remainder));
+
+        // We mask the first byte (most significant byte) to get the bits that
+        // overflowed and need to be shifted right.
+        byte overflow = (byte)((bytes[0] & ~mask) >> (NumberOfBitsInByte - remainder));
+
+        // We clear the other bits in the first byte by ANDing it with the mask.
+        bytes[0] = (byte)(bytes[0] & mask);
+
+        // Finally, we set the rightmost (least significant)
+        // overflow bits of the last byte we copied from the MSB.
+        bytes[^1] = (byte)(bytes[^1] | overflow);
     }
     /// <summary>
     /// Rotates the bits in an array of bytes to the right.
