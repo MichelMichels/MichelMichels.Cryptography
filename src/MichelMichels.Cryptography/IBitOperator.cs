@@ -13,5 +13,5 @@ public interface IBitOperator
     bool ShiftLeft(byte[] data);
     bool ShiftRight(byte[] data);
 
-
+    byte[] Permutate(byte[] data, int[] permutationTable);
 }

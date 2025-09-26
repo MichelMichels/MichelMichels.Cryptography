@@ -200,4 +200,24 @@ public class BitOperatorTests
         Assert.AreEqual(expected, inputArray[0]);
         Assert.AreEqual(carryFlag, isCarried);
     }
+
+    [TestMethod]
+    public void Permutate_Test()
+    {
+        // Arrange
+        BitOperator context = new();
+        byte[] input = new byte[] { 0b1010_1010, 0b1100_1100 }; // 16 bits
+        int[] permutationTable = new int[]
+        {
+            16, 15, 14, 13, 12, 11, 10, 9,
+            8, 7, 6, 5, 4, 3, 2, 1
+        };
+        byte[] expected = new byte[] { 0b0011_0011, 0b0101_0101 };
+
+        // Act
+        byte[] output = context.Permutate(input, permutationTable);
+
+        // Assert
+        CollectionAssert.AreEqual(expected, output);
+    }
 }

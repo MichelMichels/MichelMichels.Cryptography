@@ -223,4 +223,38 @@ public class BitOperator : IBitOperator
 
         return rightMostCarryFlag;
     }
+
+    public byte[] Permutate(byte[] data, int[] permutationTable)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(permutationTable);
+
+        int outputBitLength = permutationTable.Length;
+        int outputByteLength = (outputBitLength + 7) / 8;
+        byte[] output = new byte[outputByteLength];
+
+        for (int i = 0; i < permutationTable.Length; i++)
+        {
+            int inputBitIndex = permutationTable[i];
+            if (inputBitIndex < 0 || inputBitIndex > data.Length * 8)
+            {
+                throw new ArgumentOutOfRangeException(nameof(permutationTable), $"Permutation index {inputBitIndex} is out of range.");
+            }
+
+            // Get the value of the input bit
+            int inputByteIndex = (inputBitIndex - 1) / 8;
+            int inputBitOffset = 7 - ((inputBitIndex - 1) % 8);
+            bool bit = (data[inputByteIndex] & (1 << inputBitOffset)) != 0;
+
+            // Set the value in the output
+            int outputByteIndex = i / 8;
+            int outputBitOffset = 7 - (i % 8);
+            if (bit)
+            {
+                output[outputByteIndex] |= (byte)(1 << outputBitOffset);
+            }
+        }
+
+        return output;
+    }
 }
